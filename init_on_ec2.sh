@@ -18,4 +18,4 @@ nvm install 16
 npm install -g localtunnel
 
 # clone github repo
-git clonehttps://github.com/spencer900824/Line-Notify.git
+git clone https://github.com/spencer900824/Line-Notify.git
