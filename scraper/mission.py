@@ -94,4 +94,4 @@ def crawl_mops(driver):
     # 5. save history
     history.update(newEvents)
     with open(history_file, "w") as f:
-        json.dump(history, f ,ensure_ascii=False)
+        json.dump(history, f ,ensure_ascii=False, indent=4)
