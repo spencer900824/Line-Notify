@@ -1,6 +1,6 @@
 from scraper.mission import crawl_mops
 from driver.web_driver import ChromeDriver
-
+import traceback
 
 def run_scraper(driver=None):
     try:
@@ -9,7 +9,7 @@ def run_scraper(driver=None):
         crawl_mops(driver)
         return "OK", 200
     except Exception as e :
-        return "Error:  {}".format(e), 500
+        return f"Error:  {e}\n{traceback.format_exc()}", 500
 
 # example
 if __name__ == '__main__':

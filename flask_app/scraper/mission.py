@@ -3,6 +3,8 @@ import json
 import time
 import requests
 import logging
+import base64
+import os
 
 
 logger = logging.getLogger()
@@ -18,6 +20,8 @@ def crawl_mops(driver):
     history_dir = './history'
     history_file = history_dir + '/history.json'
     png_dir = history_dir + '/png'
+    if not os.path.exists(png_dir):
+        os.mkdir(png_dir)
     try:
         with open(history_file, "r") as f:
             history = json.loads(f.read())
@@ -78,7 +82,10 @@ def crawl_mops(driver):
             pass
         # save newData
         png_file = f"{png_dir}/{stock_id}-{date}-{time_}.png"
-        logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
+        img = driver.get_screenshot_as_base64()
+        with open(png_file, 'wb') as f:
+            f.write(base64.b64decode(img))
+        # logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
         driver.close()
         driver.switch_to.window(baseWindow)
         ####判斷字詞發送notify
