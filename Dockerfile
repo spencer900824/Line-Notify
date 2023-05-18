@@ -29,4 +29,4 @@ COPY ./history /app/history
 EXPOSE 5001
 
 # Start the Flask server
-CMD ["python", "-m", "flask", "-A", "flask_app/main", "run", "-h", "0.0.0.0", "-p", "5001"]
+CMD ["python3", "-m", "flask", "-A", "flask_app/main", "run", "-h", "0.0.0.0", "-p", "5001"]
