@@ -2,6 +2,10 @@ from selenium.webdriver.common.by import By
 import json
 import time
 import requests
+import logging
+
+
+logger = logging.getLogger()
 
 def crawl_mops(driver):
 
@@ -74,7 +78,7 @@ def crawl_mops(driver):
             pass
         # save newData
         png_file = f"{png_dir}/{stock_id}-{date}-{time_}.png"
-        print(f"Save {png_file}:{driver.save_screenshot(png_file)}")
+        logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
         driver.close()
         driver.switch_to.window(baseWindow)
         ####判斷字詞發送notify
@@ -82,7 +86,10 @@ def crawl_mops(driver):
             if word in key:
                 target_word = f"[{word}]"
                 message = f"{target_word}:\n{cmpnyname} {stock_id}\n{announcement}\n{date} {time_}"
-                image = open(png_file, 'rb')
+                try:
+                    image = open(png_file, 'rb')
+                except:
+                    image = None
                 # image = io.BytesIO(newData[key]['png'])
                 imageFile = {'imageFile' :image}   # 設定圖片資訊
                 data = {
