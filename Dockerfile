@@ -20,6 +20,9 @@ COPY ./requirements.txt /app/requirements.txt
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# COPY config.json
+COPY ./config.json /app/config.json
+
 # Copy the Flask server code into the container
 COPY ./flask_app /app/flask_app
 
