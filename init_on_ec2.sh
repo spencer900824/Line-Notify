@@ -19,3 +19,6 @@ npm install -g localtunnel
 
 # clone github repo
 git clone https://github.com/spencer900824/Line-Notify.git
+
+# config
+echo '{"access_token":"", "secret":""}' > Line-Notify/config.json
