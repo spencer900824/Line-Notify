@@ -7,6 +7,9 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import json
 
+flag = 2 
+keywords = []
+
 
 with open('config.json','r',encoding='utf-8') as f:
     config = json.loads(f.read())

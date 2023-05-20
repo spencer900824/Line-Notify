@@ -7,6 +7,7 @@
 
 # Run server
 1. git clone https://github.com/spencer900824/Line-Notify.git (if run on EC2, skip this step)
+1. set config.json
 2. input cmd: ". Line-Notify/run.sh"
 
 # Check alive
