@@ -6,6 +6,9 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 flag = 2 
 keywords = []
@@ -45,6 +48,7 @@ def handle_message(event):
 def create_app():
     app = Flask(__name__)
     app.debug=True
+    logger.warning("Creating app")
     app.add_url_rule('/', 'index', lambda: 'ALIVE')
 
     @app.route("/callback", methods=['POST'])
