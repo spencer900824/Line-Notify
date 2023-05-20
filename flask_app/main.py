@@ -44,6 +44,7 @@ def handle_message(event):
 
 def create_app():
     app = Flask(__name__)
+    app.debug=True
     app.add_url_rule('/', 'index', lambda: 'ALIVE')
 
     @app.route("/callback", methods=['POST'])
@@ -68,7 +69,7 @@ def create_app():
 
     scheduler = APScheduler()
     scheduler.init_app(app)
-    scheduler.add_job(id='run_scraper', func=run_scraper, args=[chrome_driver, keywords], trigger='interval', seconds=60)
+    scheduler.add_job(id='run_scraper', func=run_scraper, args=[chrome_driver, keywords], trigger='interval', seconds=10)
     scheduler.start()
     return app
 

@@ -98,6 +98,7 @@ def crawl_mops(driver, keywords):
         ####判斷字詞發送notify
         for word in targets:
             if word in key:
+                history.update({key:script})
                 target_word = f"[{word}]"
                 message = f"{target_word}:\n{cmpnyname} {stock_id}\n{announcement}\n{date} {time_}"
                 try:
@@ -113,6 +114,5 @@ def crawl_mops(driver, keywords):
                 print(f"Msg pushed:\n{message}")
 
     # 5. save history
-    history.update(newEvents)
     with open(history_file, "w") as f:
         json.dump(history, f ,ensure_ascii=False, indent=4)
