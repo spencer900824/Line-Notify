@@ -9,7 +9,7 @@ import logging
 
 logger = logging.getLogger()
 
-def crawl_mops(driver, keywords):
+def crawl_mops(driver):
     logger.warning("Starting")
     urlline = 'https://notify-api.line.me/api/notify'
     with open('config.json','r',encoding='utf-8') as f:
@@ -32,9 +32,13 @@ def crawl_mops(driver, keywords):
     except Exception as e:
         history = {}
 
-    targets = keywords
+    try:
+        with open("keywords.json", 'r') as f:
+            targets = json.loads(f.read())
+    except Exception as e:
+        targets = []
 
-    logger.warning(f"keywords: {keywords}")
+    logger.warning(f"keywords: {targets}")
     # 1. goto url
     logger.warning("go to url")
     if driver.current_url == target_url:

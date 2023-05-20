@@ -35,6 +35,8 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請輸入您想查詢的所有關鍵字，輸入完成後請輸入\"結束\"'))
     elif(text == "結束"):
         flag = 0
+        with open("keywords.json", 'w') as f:
+            json.dump(keywords, f, ensure_ascii=False)
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='設定完成，您重新設定的關鍵字為: ' + str(keywords)))
     else:
         if(flag==1):
@@ -73,7 +75,7 @@ def create_app():
 
     scheduler = APScheduler()
     scheduler.init_app(app)
-    scheduler.add_job(id='run_scraper', func=run_scraper, args=[chrome_driver, keywords], trigger='interval', seconds=10)
+    scheduler.add_job(id='run_scraper', func=run_scraper, args=[chrome_driver], trigger='interval', seconds=10)
     scheduler.start()
     return app
 
