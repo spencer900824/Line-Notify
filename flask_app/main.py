@@ -75,7 +75,7 @@ def create_app():
 
     scheduler = APScheduler()
     scheduler.init_app(app)
-    scheduler.add_job(id='run_scraper', func=run_scraper, args=[chrome_driver], trigger='interval', seconds=10)
+    scheduler.add_job(id='run_scraper', func=run_scraper, args=[chrome_driver], trigger='interval', seconds=30)
     scheduler.start()
     return app
 
