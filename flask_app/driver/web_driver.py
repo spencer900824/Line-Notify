@@ -2,10 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 class ChromeDriver(object):
-    def __init__(self):
+    def __init__(self, headless=True):
         self.cdm = ChromeDriverManager().install()
         self.options = Options()
-        self.options.add_argument('--headless')
+        if(headless):
+            self.options.add_argument('--headless')
         self.options.add_argument('--no-sandbox')
         self.driver = webdriver.Chrome( self.cdm, options=self.options)
 

@@ -10,7 +10,7 @@ import os
 logger = logging.getLogger()
 
 def crawl_mops(driver):
-
+    print("Starting")
     urlline = 'https://notify-api.line.me/api/notify'
     token = 't7HJDWKQr0zHeOYM6AJizVgTtQMCfjPnQpDlNVMOLH0'   ###授權碼
     headers = {
@@ -34,15 +34,21 @@ def crawl_mops(driver):
 
 
     # 1. goto url
+    print("go to url")
     if driver.current_url == target_url:
         driver.refresh()
     else:
         driver.get(target_url)
     # 2. find new events
-    eventsTable = driver.find_element(By.XPATH, '//*[@id="table01"]/form[2]/table/tbody')
+    print("getting new events")
+    try:
+        eventsTable = driver.find_element(By.XPATH, '//*[@id="table01"]/form[2]/table/tbody')
+    except Exception as e:
+        print("No events table found")
+        return
     trs = eventsTable.find_elements(By.TAG_NAME, 'tr')
     newEvents = {}
-    for tr in trs:
+    for tr in trs[1:]:
         try:
             tds = tr.find_elements(By.TAG_NAME, 'td')
             key = ''
@@ -57,7 +63,6 @@ def crawl_mops(driver):
             print(f"Error in 2 : {str(e)}")
     
     # 4. check target
-    newData = {}
     baseWindow = driver.window_handles[0]
    
     for key, script in newEvents.items():
