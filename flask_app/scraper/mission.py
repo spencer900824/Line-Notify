@@ -5,12 +5,12 @@ import requests
 import logging
 import base64
 import os
-
+import logging
 
 logger = logging.getLogger()
 
 def crawl_mops(driver, keywords):
-    print("Starting")
+    logger.warning("Starting")
     urlline = 'https://notify-api.line.me/api/notify'
     with open('config.json','r',encoding='utf-8') as f:
         config = json.loads(f.read())
@@ -34,19 +34,19 @@ def crawl_mops(driver, keywords):
 
     targets = keywords
 
-    print(f"keywords: {keywords}")
+    logger.warning(f"keywords: {keywords}")
     # 1. goto url
-    print("go to url")
+    logger.warning("go to url")
     if driver.current_url == target_url:
         driver.refresh()
     else:
         driver.get(target_url)
     # 2. find new events
-    print("getting new events")
+    logger.warning("getting new events")
     try:
         eventsTable = driver.find_element(By.XPATH, '//*[@id="table01"]/form[2]/table/tbody')
     except Exception as e:
-        print("No events table found")
+        logger.warning("No events table found")
         return
     trs = eventsTable.find_elements(By.TAG_NAME, 'tr')
     newEvents = {}
@@ -62,7 +62,7 @@ def crawl_mops(driver, keywords):
             else: # new events
                 newEvents[key] = tds[-1].find_element(By.TAG_NAME, 'input').get_attribute('onclick')
         except Exception as e:
-            print(f"Error in 2 : {str(e)}")
+            logger.warning(f"Error in 2 : {str(e)}")
     
     # 4. check target
     baseWindow = driver.window_handles[0]
@@ -74,7 +74,7 @@ def crawl_mops(driver, keywords):
         announcement = ''.join(key.split(' ')[4:])
         
         script = script.replace('openWindow','openWindowAction').replace('this.form', 'document.fm_t05sr01_1') # magic method
-        #print(script)
+        #logger.warning(script)
         driver.execute_script(script)
         driver.switch_to.window(driver.window_handles[-1])
         time.sleep(1)
@@ -111,7 +111,7 @@ def crawl_mops(driver, keywords):
                 'message':message ,     # 設定 LINE Notify message ( 不可少 )
                 }
                 data = requests.post(urlline, headers=headers, data=data, files=imageFile)   # 發送 LINE Notify
-                print(f"Msg pushed:\n{message}")
+                logger.warning(f"Msg pushed:\n{message}")
 
     # 5. save history
     with open(history_file, "w") as f:
