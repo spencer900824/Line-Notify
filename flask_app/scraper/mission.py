@@ -12,7 +12,9 @@ logger = logging.getLogger()
 def crawl_mops(driver):
     print("Starting")
     urlline = 'https://notify-api.line.me/api/notify'
-    token = 't7HJDWKQr0zHeOYM6AJizVgTtQMCfjPnQpDlNVMOLH0'   ###授權碼
+    with open('config.json','r',encoding='utf-8') as f:
+        config = json.loads(f.read())
+    token = config['token']
     headers = {
         'Authorization': 'Bearer ' + token    # 設定 LINE Notify 權杖
     }
