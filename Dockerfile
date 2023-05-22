@@ -29,6 +29,14 @@ COPY ./flask_app /app/flask_app
 # Copy history dir
 COPY ./history /app/history
 
+# Set ZH as system font
+RUN apt-get install -y locales
+RUN sed -ie 's/# zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/g' /etc/locale.gen
+RUN locale-gen
+ENV LANG zh_CN.UTF-8
+ADD ./Songti.ttc /usr/share/fonts/
+RUN fc-cache -vf
+
 EXPOSE 5001
 
 # Start the Flask server
