@@ -32,6 +32,7 @@ temp_users_keywords = {}
 def handle_message(event):
     global flag, temp_users_keywords
     text = event.message.text
+    print(event)
     if(text == "重新設定"):
         temp_users_keywords[event.source.userId] = []
         flag[event.source.userId] = 1
@@ -45,7 +46,7 @@ def handle_message(event):
 
         with open("keywords.json", 'w') as f:
             json.dump(json_data, f, ensure_ascii=False, indent=4)
-            
+
         del temp_users_keywords[event.source.userId]
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='設定完成，您重新設定的關鍵字為: ' + str(keywords)))
     else:
