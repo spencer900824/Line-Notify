@@ -32,26 +32,25 @@ temp_users_keywords = {}
 def handle_message(event):
     global flag, temp_users_keywords
     text = event.message.text
-    print(event)
     if(text == "重新設定"):
-        temp_users_keywords[event.source.userId] = []
-        flag[event.source.userId] = 1
+        temp_users_keywords[event.source.user_id] = []
+        flag[event.source.user_id] = 1
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請輸入您想查詢的所有關鍵字，輸入完成後請輸入\"結束\"'))
     elif(text == "結束"):
-        flag[event.source.userId] = 0
+        flag[event.source.user_id] = 0
         with open("keywords.json", "r") as file:
             json_data = json.load(file)
         
-        json_data[event.source.userId] = temp_users_keywords[event.source.userId]
+        json_data[event.source.user_id] = temp_users_keywords[event.source.user_id]
 
         with open("keywords.json", 'w') as f:
             json.dump(json_data, f, ensure_ascii=False, indent=4)
 
-        del temp_users_keywords[event.source.userId]
+        del temp_users_keywords[event.source.user_id]
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='設定完成，您重新設定的關鍵字為: ' + str(keywords)))
     else:
-        if(flag[event.source.userId]==1):
-            temp_users_keywords[event.source.userId].append(text)
+        if(flag[event.source.user_id]==1):
+            temp_users_keywords[event.source.user_id].append(text)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='輸入完成後請輸入\"結束\"'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請輸入\"重新設定\"以重新設定您想要的關鍵字'))
