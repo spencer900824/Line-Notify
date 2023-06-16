@@ -36,7 +36,9 @@ def handle_message(event):
     if event.source.user_id not in flag:
         flag[event.source.user_id] = 0
 
-    if(text == "重新設定"):
+    if(text == "測試"):
+        line_bot_api.push_message(event.source.user_id, TextSendMessage(text="this is puth"))
+    elif(text == "重新設定"):
         temp_users_keywords[event.source.user_id] = []
         flag[event.source.user_id] = 1
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請輸入您想查詢的所有關鍵字，輸入完成後請輸入\"結束\"'))
@@ -63,8 +65,9 @@ def handle_message(event):
         with open("keywords.json", 'w') as f:
             json.dump(json_data, f, ensure_ascii=False, indent=4)
 
+        
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='設定完成，您重新設定的關鍵字為: ' + str(temp_users_keywords[event.source.user_id])))
         del temp_users_keywords[event.source.user_id]
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='設定完成，您重新設定的關鍵字為: ' + str(keywords)))
     else:
         if(flag[event.source.user_id]==1):
             temp_users_keywords[event.source.user_id].append(text)
