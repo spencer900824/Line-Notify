@@ -1,7 +1,7 @@
 #!/bin/bash
 # delete old image
 # sudo docker stop line-notify 
-# sudo docker rm line-notify
+sudo docker rm line-notify
 # sudo docker rmi line-notify:latest
 # build
 sudo docker build -t line-notify .
