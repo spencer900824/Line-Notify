@@ -10,7 +10,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-flag = 2 
+
 keywords = []
 
 
@@ -24,23 +24,33 @@ secret = config['secret']
 line_bot_api = LineBotApi(access_token)
 handler = WebhookHandler(secret)
 
+flag = {}
+temp_users_keywords = {}
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    global flag, keywords
+    global flag, temp_users_keywords
     text = event.message.text
     if(text == "重新設定"):
-        keywords = []
-        flag = 1
+        temp_users_keywords[event.source.userId] = []
+        flag[event.source.userId] = 1
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請輸入您想查詢的所有關鍵字，輸入完成後請輸入\"結束\"'))
     elif(text == "結束"):
-        flag = 0
+        flag[event.source.userId] = 0
+        with open("keywords.json", "r") as file:
+            json_data = json.load(file)
+        
+        json_data[event.source.userId] = temp_users_keywords[event.source.userId]
+
         with open("keywords.json", 'w') as f:
-            json.dump(keywords, f, ensure_ascii=False)
+            json.dump(json_data, f, ensure_ascii=False, indent=4)
+            
+        del temp_users_keywords[event.source.userId]
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='設定完成，您重新設定的關鍵字為: ' + str(keywords)))
     else:
-        if(flag==1):
-            keywords.append(text)
+        if(flag[event.source.userId]==1):
+            temp_users_keywords[event.source.userId].append(text)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='輸入完成後請輸入\"結束\"'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請輸入\"重新設定\"以重新設定您想要的關鍵字'))
@@ -75,7 +85,7 @@ def create_app():
 
     scheduler = APScheduler()
     scheduler.init_app(app)
-    scheduler.add_job(id='run_scraper', func=run_scraper, args=[chrome_driver], trigger='interval', seconds=30)
+    scheduler.add_job(id='run_scraper', func=run_scraper, args=[chrome_driver, line_bot_api], trigger='interval', seconds=30)
     scheduler.start()
     return app
 

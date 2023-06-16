@@ -7,9 +7,18 @@ import base64
 import os
 import logging
 
+import pyimgur
+
+from linebot.models import ImageSendMessage, TextSendMessage
+
+def upload_image(client_id, imgpath):
+    im = pyimgur.Imgur(client_id)
+    upload_image = im.upload_image(imgpath, title="Uploaded with PyImgur")
+    return upload_image.link
+
 logger = logging.getLogger()
 
-def crawl_mops(driver):
+def crawl_mops(driver, line_bot_api):
     logger.warning("Starting")
     urlline = 'https://notify-api.line.me/api/notify'
     with open('config.json','r',encoding='utf-8') as f:
@@ -34,11 +43,11 @@ def crawl_mops(driver):
 
     try:
         with open("keywords.json", 'r') as f:
-            targets = json.loads(f.read())
+            users = json.loads(f.read())
     except Exception as e:
-        targets = []
+        users = {}
 
-    logger.warning(f"keywords: {targets}")
+    logger.warning(f"keywords: {users}")
     # 1. goto url
     logger.warning("go to url")
     if driver.current_url == target_url:
@@ -100,22 +109,34 @@ def crawl_mops(driver):
         driver.close()
         driver.switch_to.window(baseWindow)
         ####判斷字詞發送notify
-        for word in targets:
-            if word in key:
-                history.update({key:script})
-                target_word = f"[{word}]"
-                message = f"{target_word}:\n{cmpnyname} {stock_id}\n{announcement}\n{date} {time_}"
-                try:
-                    image = open(png_file, 'rb')
-                except:
-                    image = None
-                # image = io.BytesIO(newData[key]['png'])
-                imageFile = {'imageFile' :image}   # 設定圖片資訊
-                data = {
-                'message':message ,     # 設定 LINE Notify message ( 不可少 )
-                }
-                data = requests.post(urlline, headers=headers, data=data, files=imageFile)   # 發送 LINE Notify
-                logger.warning(f"Msg pushed:\n{message}")
+        for userId in list(users.keys()):
+          for word in users[userId]:
+              if word in key:
+                    history.update({key:script})
+                    target_word = f"[{word}]"
+                    message = f"{target_word}:\n{cmpnyname} {stock_id}\n{announcement}\n{date} {time_}"
+                    exist_image = True
+                    try:
+                        image = open(png_file, 'rb')
+                    except:
+                        exist_image = False
+                        image = None
+                    image = io.BytesIO(newData[key]['png'])
+                    imageFile = {'imageFile' :image}   # 設定圖片資訊
+                    
+                    if(exist_image == True):
+                        img_url = upload_image("42ec6a6d416cb1e", png_file)
+                    #   data = {
+                    #   'message':message ,     # 設定 LINE Notify message ( 不可少 )
+                    #   }
+
+                    line_bot_api.push_message(userId, TextSendMessage(text=message))
+                    if(exist_image == True):
+                        line_bot_api.push_message(userId, ImageSendMessage(original_content_url=img_url,preview_image_url=img_url))
+
+                    # data = requests.post(urlline, headers=headers, data=data, files=imageFile)   # 發送 LINE Notify
+                    logger.warning(f"Msg pushed:\n{message}")
+                    break
 
     # 5. save history
     with open(history_file, "w") as f:
