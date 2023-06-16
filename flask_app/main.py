@@ -32,6 +32,10 @@ temp_users_keywords = {}
 def handle_message(event):
     global flag, temp_users_keywords
     text = event.message.text
+
+    if event.source.user_id not in flag:
+        flag[event.source.user_id] = 0
+
     if(text == "重新設定"):
         temp_users_keywords[event.source.user_id] = []
         flag[event.source.user_id] = 1
