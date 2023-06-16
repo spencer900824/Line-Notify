@@ -47,6 +47,7 @@ def handle_message(event):
     # Try to open the file in write mode with "x" flag
             with open("keywords.json", 'x') as file:
                 # File does not exist, created successfully
+                json.dump({}, file, ensure_ascii=False, indent=4)
                 print("File created successfully.")
 
         except FileExistsError:
