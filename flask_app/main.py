@@ -42,6 +42,18 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請輸入您想查詢的所有關鍵字，輸入完成後請輸入\"結束\"'))
     elif(text == "結束"):
         flag[event.source.user_id] = 0
+
+        try:
+    # Try to open the file in write mode with "x" flag
+            with open("keywords.json", 'x') as file:
+                # File does not exist, created successfully
+                print("File created successfully.")
+
+        except FileExistsError:
+            # File already exists
+            print("File already exists.")
+
+
         with open("keywords.json", "r") as file:
             json_data = json.load(file)
         
