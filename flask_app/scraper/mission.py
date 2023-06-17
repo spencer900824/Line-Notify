@@ -120,15 +120,15 @@ def crawl_mops(driver, line_bot_api):
                     target_word = f"[{word}]"
                     message = f"{target_word}:\n{cmpnyname} {stock_id}\n{announcement}\n{date} {time_}"
                     exist_image = True
-                    try:
+                    # try:
 
-                        image = open(png_file, 'rb')
-                    except:
-                        logger.warning("image not exist")
-                        exist_image = False
-                        image = None
-                    image = io.BytesIO(newData[key]['png'])
-                    imageFile = {'imageFile' :image}   # 設定圖片資訊
+                    #     image = open(png_file, 'rb')
+                    # except:
+                    #     logger.warning("image not exist")
+                    #     exist_image = False
+                    #     image = None
+                    # image = io.BytesIO(newData[key]['png'])
+                    # imageFile = {'imageFile' :image}   # 設定圖片資訊
                     
                     if(exist_image == True):
                         logger.warning("upload_image")
