@@ -115,7 +115,7 @@ def crawl_mops(driver, line_bot_api):
                 logger.warning(word)
                 logger.warning(key)
                 if word in key:
-                    logger.warning(key)
+                    logger.warning("word check")
                     history.update({key:script})
                     target_word = f"[{word}]"
                     message = f"{target_word}:\n{cmpnyname} {stock_id}\n{announcement}\n{date} {time_}"
@@ -129,12 +129,15 @@ def crawl_mops(driver, line_bot_api):
                     imageFile = {'imageFile' :image}   # 設定圖片資訊
                     
                     if(exist_image == True):
+                        logger.warning("upload_image")
                         img_url = upload_image("42ec6a6d416cb1e", png_file)
+                        logger.warning(f"url {img_url}")
                     #   data = {
                     #   'message':message ,     # 設定 LINE Notify message ( 不可少 )
                     #   }
 
                     line_bot_api.push_message(userId, TextSendMessage(text=message))
+                    logger.warning("push message")
                     if(exist_image == True):
                         line_bot_api.push_message(userId, ImageSendMessage(original_content_url=img_url,preview_image_url=img_url))
 
