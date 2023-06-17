@@ -110,8 +110,10 @@ def crawl_mops(driver, line_bot_api):
         driver.switch_to.window(baseWindow)
         ####判斷字詞發送notify
         for userId in list(users.keys()):
-          for word in users[userId]:
-              if word in key:
+            logger.warning(userId)
+            for word in users[userId]:
+                logger.warning(word)
+                if word in key:
                     history.update({key:script})
                     target_word = f"[{word}]"
                     message = f"{target_word}:\n{cmpnyname} {stock_id}\n{announcement}\n{date} {time_}"
