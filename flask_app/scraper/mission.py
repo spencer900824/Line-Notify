@@ -116,7 +116,7 @@ def crawl_mops(driver, line_bot_api):
                 logger.warning(key)
                 if word in key:
                     logger.warning("word check")
-                    history.update({key:script})
+                    #history.update({key:script})
                     target_word = f"[{word}]"
                     message = f"{target_word}:\n{cmpnyname} {stock_id}\n{announcement}\n{date} {time_}"
                     exist_image = True
