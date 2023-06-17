@@ -114,6 +114,7 @@ def crawl_mops(driver, line_bot_api):
             for word in users[userId]:
                 logger.warning(word)
                 if word in key:
+                    logger.warning(key)
                     history.update({key:script})
                     target_word = f"[{word}]"
                     message = f"{target_word}:\n{cmpnyname} {stock_id}\n{announcement}\n{date} {time_}"
