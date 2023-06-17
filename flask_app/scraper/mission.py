@@ -113,6 +113,7 @@ def crawl_mops(driver, line_bot_api):
             logger.warning(userId)
             for word in users[userId]:
                 logger.warning(word)
+                logger.warning(key)
                 if word in key:
                     logger.warning(key)
                     history.update({key:script})
