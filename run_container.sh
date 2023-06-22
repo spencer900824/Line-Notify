@@ -1,0 +1,1 @@
+sudo docker run -d --name line-notify -p 5001:5001 line-notify
