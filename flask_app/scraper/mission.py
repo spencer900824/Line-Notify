@@ -11,7 +11,7 @@ import pyimgur
 
 from linebot.models import ImageSendMessage, TextSendMessage
 
-def upload_image(client_id, imgpath):
+def upload_image(imgpath, client_id = "42ec6a6d416cb1e"):
     im = pyimgur.Imgur(client_id)
     upload_image = im.upload_image(imgpath, title="Uploaded with PyImgur")
     return upload_image.link
@@ -101,7 +101,7 @@ def crawl_mops(driver, line_bot_api):
         except:
             pass
         # save newData
-        png_file = f"{png_dir}/{stock_id}-{date}-{time_}.png"
+        png_file = f"{png_dir}/image.png"
         img = driver.get_screenshot_as_base64()
         with open(png_file, 'wb') as f:
             f.write(base64.b64decode(img))
@@ -132,7 +132,7 @@ def crawl_mops(driver, line_bot_api):
                     
                     if(exist_image == True):
                         logger.warning("upload_image")
-                        img_url = upload_image("42ec6a6d416cb1e", png_file)
+                        img_url = upload_image(png_file)
                         logger.warning(f"url {img_url}")
                     #   data = {
                     #   'message':message ,     # 設定 LINE Notify message ( 不可少 )
