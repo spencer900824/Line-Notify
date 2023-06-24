@@ -8,13 +8,30 @@ import os
 import logging
 
 import pyimgur
+import boto3
 
 from linebot.models import ImageSendMessage, TextSendMessage
 
-def upload_image(imgpath, client_id = "42ec6a6d416cb1e"):
-    im = pyimgur.Imgur(client_id)
-    upload_image = im.upload_image(imgpath, title="Uploaded with PyImgur")
-    return upload_image.link
+# def upload_image(imgpath, client_id = "42ec6a6d416cb1e"):
+#     im = pyimgur.Imgur(client_id)
+#     upload_image = im.upload_image(imgpath, title="Uploaded with PyImgur")
+#     return upload_image.link
+
+
+
+def upload_image(file_path, bucket_name="linebot-notify-images"):
+    s3 = boto3.client('s3')
+    
+    # Generate a unique key for the file in S3
+    object_key = "onekey"
+    
+    # Upload the file to S3 bucket
+    s3.upload_file(file_path, bucket_name, object_key)
+    
+    # Generate the public URL for the uploaded file
+    public_url = f"https://{bucket_name}.s3.amazonaws.com/{object_key}"
+    
+    return public_url
 
 logger = logging.getLogger()
 
