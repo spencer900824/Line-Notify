@@ -19,19 +19,19 @@ from linebot.models import ImageSendMessage, TextSendMessage
 
 imgNum = 0
 
-def upload_image(file_path, bucket_name="linebot-notify-images"):
-    s3 = boto3.client( 's3')
+# def upload_image(file_path, bucket_name="linebot-notify-images"):
+#     s3 = boto3.client( 's3')
     
-    # Generate a unique key for the file in S3
-    object_key = "onekey"
+#     # Generate a unique key for the file in S3
+#     object_key = "onekey"
     
-    # Upload the file to S3 bucket
-    s3.upload_file(file_path, bucket_name, object_key)
+#     # Upload the file to S3 bucket
+#     s3.upload_file(file_path, bucket_name, object_key)
     
-    # Generate the public URL for the uploaded file
-    public_url = f"https://{bucket_name}.s3.amazonaws.com/{object_key}"
+#     # Generate the public URL for the uploaded file
+#     public_url = f"https://{bucket_name}.s3.amazonaws.com/{object_key}"
     
-    return public_url
+#     return public_url
 
 logger = logging.getLogger()
 
