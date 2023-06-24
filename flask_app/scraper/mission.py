@@ -113,6 +113,8 @@ def crawl_mops(driver, line_bot_api, keywords_lock):
         # logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
         driver.close()
         driver.switch_to.window(baseWindow)
+       
+        img_url = upload_image(png_file)
         ####判斷字詞發送notify
         for userId in list(users.keys()):
             logger.warning(userId)
@@ -135,10 +137,10 @@ def crawl_mops(driver, line_bot_api, keywords_lock):
                     # image = io.BytesIO(newData[key]['png'])
                     # imageFile = {'imageFile' :image}   # 設定圖片資訊
                     
-                    if(exist_image == True):
-                        logger.warning("upload_image")
-                        img_url = upload_image(png_file)
-                        logger.warning(f"url {img_url}")
+                    # if(exist_image == True):
+                    #     logger.warning("upload_image")
+                    #     img_url = upload_image(png_file)
+                    #     logger.warning(f"url {img_url}")
                     #   data = {
                     #   'message':message ,     # 設定 LINE Notify message ( 不可少 )
                     #   }
