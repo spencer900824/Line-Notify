@@ -1,1 +1,1 @@
-docker start line-notify
+sudo docker start line-notify
