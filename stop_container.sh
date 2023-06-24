@@ -1,1 +1,1 @@
-docker stop line-notify
+sudo docker stop line-notify

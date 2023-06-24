@@ -123,7 +123,7 @@ def crawl_mops(driver, line_bot_api, keywords_lock):
         except:
             pass
         # save newData
-        png_file = f"static/{stock_id}-{date}-{time_}.png"
+        png_file = f"{stock_id}-{date}-{time_}.png"
         img = driver.get_screenshot_as_base64()
         with open(png_file, 'wb') as f:
             f.write(base64.b64decode(img))

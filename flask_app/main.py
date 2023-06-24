@@ -142,7 +142,7 @@ def create_app():
     
     @app.route('/image/<image_name>')
     def get_image(image_name):
-        image_path = os.path.join('./static', image_name)
+        image_path = image_name
         if os.path.isfile(image_path):
             return send_file(image_path, mimetype='image/x-png')
         else:
