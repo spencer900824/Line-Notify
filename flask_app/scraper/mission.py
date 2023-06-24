@@ -17,18 +17,10 @@ from linebot.models import ImageSendMessage, TextSendMessage
 #     upload_image = im.upload_image(imgpath, title="Uploaded with PyImgur")
 #     return upload_image.link
 
-session = boto3.Session()
-credentials = session.get_credentials()
 
-access_key = credentials.access_key
-secret_key = credentials.secret_key
 
 def upload_image(file_path, bucket_name="linebot-notify-images"):
-    s3 = boto3.client(
-        's3',  
-        aws_access_key_id=access_key,
-        aws_secret_access_key=secret_key
-    )
+    s3 = boto3.client( 's3')
     
     # Generate a unique key for the file in S3
     object_key = "onekey"
