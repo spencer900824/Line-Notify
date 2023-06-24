@@ -144,7 +144,7 @@ def create_app():
     def get_image(image_name):
         image_path = image_name
         if os.path.isfile(image_path):
-            return send_file(image_path, mimetype='image/x-png')
+            return send_file("/app/"+image_path, mimetype='image/x-png')
         else:
             return 'Image not found', 404
 

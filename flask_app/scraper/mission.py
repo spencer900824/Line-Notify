@@ -165,7 +165,7 @@ def crawl_mops(driver, line_bot_api, keywords_lock):
                     line_bot_api.push_message(userId, TextSendMessage(text=message))
                     logger.warning("push message")
                     img_url = "http://52.65.27.113:5001/image/"+png_file
-                    logger.warning("image url: ", img_url)
+                    logger.warning(img_url)
                     if(exist_image == True):
                         line_bot_api.push_message(userId, ImageSendMessage(original_content_url=img_url,preview_image_url=img_url))
 
