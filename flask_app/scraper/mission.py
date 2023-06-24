@@ -35,7 +35,7 @@ imgNum = 0
 
 logger = logging.getLogger()
 
-def crawl_mops(driver, line_bot_api, keywords_lock):
+def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict):
     logger.warning("Starting")
     urlline = 'https://notify-api.line.me/api/notify'
     with open('config.json','r',encoding='utf-8') as f:
@@ -135,10 +135,25 @@ def crawl_mops(driver, line_bot_api, keywords_lock):
         ####判斷字詞發送notify
         for userId in list(users.keys()):
             logger.warning(userId)
+            continue_flag = False
+            message_lock.acquire()
+            try:
+                if(userId not in message_dict.keys()):
+                    message_dict[userId] = []
+                elif png_file in message_dict[userId]:
+                    continue_flag = True
+            finally:
+                message_lock.release()
+            if(continue_flag):
+                continue
+
             for word in users[userId]:
                 logger.warning(word)
                 logger.warning(key)
                 if word in key:
+
+                    
+
                     logger.warning("word check")
                     #history.update({key:script})
                     target_word = f"[{word}]"
@@ -167,10 +182,16 @@ def crawl_mops(driver, line_bot_api, keywords_lock):
                     
                     logger.warning(img_url)
                     
-                    line_bot_api.push_message(userId, ImageSendMessage(original_content_url=img_url,preview_image_url=img_url))
+                    #line_bot_api.push_message(userId, ImageSendMessage(original_content_url=img_url,preview_image_url=img_url))
 
                     # data = requests.post(urlline, headers=headers, data=data, files=imageFile)   # 發送 LINE Notify
                     logger.warning(f"Msg pushed:\n{message}")
+
+                    message_lock.acquire()
+                    try:
+                        message_dict[userId].append(png_file)
+                    finally:
+                        message_lock.release()
                     break
 
     # 5. save history
