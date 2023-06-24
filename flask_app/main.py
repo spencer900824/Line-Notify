@@ -8,6 +8,8 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import json
 import logging
 
+import threading
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,47 +30,85 @@ flag = {}
 temp_users_keywords = {}
 
 
+temp_users_keywords_lock = threading.Lock()
+flag_lock = threading.Lock()
+
+keywords_lock = threading.Lock()
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     global flag, temp_users_keywords
     text = event.message.text
 
     if event.source.user_id not in flag:
-        flag[event.source.user_id] = 0
+        flag_lock.acquire()
+        try:
+            flag[event.source.user_id] = 0
+        finally:
+            flag_lock.release()
 
     if(text == "重新設定"):
-        temp_users_keywords[event.source.user_id] = []
-        flag[event.source.user_id] = 1
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請輸入您想查詢的所有關鍵字，輸入完成後請輸入\"結束\"'))
-    elif(text == "結束"):
-        flag[event.source.user_id] = 0
-
+        flag_lock.acquire()
         try:
-    # Try to open the file in write mode with "x" flag
-            with open("keywords.json", 'x') as file:
-                # File does not exist, created successfully
-                json.dump({}, file, ensure_ascii=False, indent=4)
-                print("File created successfully.")
-
-        except FileExistsError:
-            # File already exists
-            print("File already exists.")
-
-
-        with open("keywords.json", "r") as file:
-            json_data = json.load(file)
+            flag[event.source.user_id] = 1
+        finally:
+            flag_lock.release()
         
-        json_data[event.source.user_id] = temp_users_keywords[event.source.user_id]
+        temp_users_keywords_lock.acquire()
+        try:
+            temp_users_keywords[event.source.user_id] = []
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請輸入您想查詢的所有關鍵字，輸入完成後請輸入\"結束\"'))
+        finally:
+            temp_users_keywords_lock.release()
+        
+    elif(text == "結束"):
+        flag_lock.acquire()
+        try:
+            flag[event.source.user_id] = 0
+        finally:
+            flag_lock.release()
 
-        with open("keywords.json", 'w') as f:
-            json.dump(json_data, f, ensure_ascii=False, indent=4)
+
+        keywords_lock.acquire()
+        try:
+            try:
+        # Try to open the file in write mode with "x" flag
+                with open("keywords.json", 'x') as file:
+                    # File does not exist, created successfully
+                    json.dump({}, file, ensure_ascii=False, indent=4)
+                    print("File created successfully.")
+
+            except FileExistsError:
+                # File already exists
+                print("File already exists.")
+
+
+            with open("keywords.json", "r") as file:
+                json_data = json.load(file)
+            
+            json_data[event.source.user_id] = temp_users_keywords[event.source.user_id]
+
+            with open("keywords.json", 'w') as f:
+                json.dump(json_data, f, ensure_ascii=False, indent=4)
+        finally:
+            keywords_lock.release()
 
         
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='設定完成，您重新設定的關鍵字為: ' + str(temp_users_keywords[event.source.user_id])))
-        del temp_users_keywords[event.source.user_id]
+        
+        temp_users_keywords_lock.acquire()
+        try:
+            del temp_users_keywords[event.source.user_id]
+        finally:
+            temp_users_keywords_lock.release()
+            
     else:
         if(flag[event.source.user_id]==1):
-            temp_users_keywords[event.source.user_id].append(text)
+            temp_users_keywords_lock.acquire()
+            try:
+                temp_users_keywords[event.source.user_id].append(text)
+            finally:
+                temp_users_keywords_lock.release()
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='輸入完成後請輸入\"結束\"'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請輸入\"重新設定\"以重新設定您想要的關鍵字'))
@@ -103,7 +143,7 @@ def create_app():
 
     scheduler = APScheduler()
     scheduler.init_app(app)
-    scheduler.add_job(id='run_scraper', func=run_scraper, args=[chrome_driver, line_bot_api], trigger='interval', seconds=30)
+    scheduler.add_job(id='run_scraper', func=run_scraper, args=[chrome_driver, line_bot_api, keywords_lock], trigger='interval', seconds=30)
     scheduler.start()
     return app
 

@@ -18,7 +18,7 @@ def upload_image(imgpath, client_id = "42ec6a6d416cb1e"):
 
 logger = logging.getLogger()
 
-def crawl_mops(driver, line_bot_api):
+def crawl_mops(driver, line_bot_api, keywords_lock):
     logger.warning("Starting")
     urlline = 'https://notify-api.line.me/api/notify'
     with open('config.json','r',encoding='utf-8') as f:
@@ -41,11 +41,16 @@ def crawl_mops(driver, line_bot_api):
     except Exception as e:
         history = {}
 
+    keywords_lock.acquire()
+
     try:
         with open("keywords.json", 'r') as f:
             users = json.loads(f.read())
     except Exception as e:
         users = {}
+
+    finally:
+        keywords_lock.release()
 
     logger.warning(f"keywords: {users}")
     # 1. goto url
