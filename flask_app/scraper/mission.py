@@ -17,7 +17,7 @@ from linebot.models import ImageSendMessage, TextSendMessage
 #     upload_image = im.upload_image(imgpath, title="Uploaded with PyImgur")
 #     return upload_image.link
 
-
+imgNum = 0
 
 def upload_image(file_path, bucket_name="linebot-notify-images"):
     s3 = boto3.client( 's3')
@@ -123,7 +123,7 @@ def crawl_mops(driver, line_bot_api, keywords_lock):
         except:
             pass
         # save newData
-        png_file = f"{png_dir}/image.png"
+        png_file = f"static/{stock_id}-{date}-{time_}.png"
         img = driver.get_screenshot_as_base64()
         with open(png_file, 'wb') as f:
             f.write(base64.b64decode(img))
@@ -131,7 +131,7 @@ def crawl_mops(driver, line_bot_api, keywords_lock):
         driver.close()
         driver.switch_to.window(baseWindow)
        
-        img_url = upload_image(png_file)
+        #img_url = upload_image(png_file)
         ####判斷字詞發送notify
         for userId in list(users.keys()):
             logger.warning(userId)
@@ -164,6 +164,8 @@ def crawl_mops(driver, line_bot_api, keywords_lock):
 
                     line_bot_api.push_message(userId, TextSendMessage(text=message))
                     logger.warning("push message")
+                    img_url = "http://52.65.27.113:5001/image/"+png_file
+                    logger.warning("image url: ", img_url)
                     if(exist_image == True):
                         line_bot_api.push_message(userId, ImageSendMessage(original_content_url=img_url,preview_image_url=img_url))
 

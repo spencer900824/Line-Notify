@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask, request, abort, send_file
 from run_scraper import run_scraper
 from flask_apscheduler.scheduler import APScheduler
 from driver.web_driver import ChromeDriver
@@ -8,6 +8,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import json
 import logging
 
+import os
 import threading
 
 logger = logging.getLogger(__name__)
@@ -138,6 +139,14 @@ def create_app():
             abort(400)
 
         return 'OK'
+    
+    @app.route('/image/<image_name>')
+    def get_image(image_name):
+        image_path = os.path.join('./static', image_name)
+        if os.path.isfile(image_path):
+            return send_file(image_path, mimetype='image/x-png')
+        else:
+            return 'Image not found', 404
 
     chrome_driver = ChromeDriver(headless=True)
 
