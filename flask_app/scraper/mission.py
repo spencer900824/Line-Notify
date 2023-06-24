@@ -161,10 +161,10 @@ def crawl_mops(driver, line_bot_api, keywords_lock):
                     #   data = {
                     #   'message':message ,     # 設定 LINE Notify message ( 不可少 )
                     #   }
-
-                    line_bot_api.push_message(userId, TextSendMessage(text=message))
+                    img_url = "\n\nhttp://52.65.27.113:5001/image/"+png_file
+                    line_bot_api.push_message(userId, TextSendMessage(text=message+img_url))
                     logger.warning("push message")
-                    img_url = "http://52.65.27.113:5001/image/"+png_file
+                    
                     logger.warning(img_url)
                     
                     line_bot_api.push_message(userId, ImageSendMessage(original_content_url=img_url,preview_image_url=img_url))
