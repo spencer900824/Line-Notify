@@ -144,6 +144,10 @@ def create_app():
 
         return 'OK'
     
+    @app.route('/hello')
+    def hello():
+        return 'OK'
+    
     @app.route('/image/<image_name>')
     def get_image(image_name):
         image_path = image_name
