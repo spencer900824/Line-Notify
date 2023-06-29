@@ -33,6 +33,14 @@ imgNum = 0
     
 #     return public_url
 
+def wordInKey(word, key):
+    allWords = word.split(' ')
+    
+    for word in allWords:
+        if word not in key:
+            return False
+
+
 logger = logging.getLogger()
 
 def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict):
@@ -102,7 +110,7 @@ def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict):
     # 4. check target
     baseWindow = driver.window_handles[0]
    
-    for key, script in newEvents.items():
+    for key, script in reversed(newEvents.items()):
 
         stock_id, cmpnyname, date, time_, = key.split(' ')[:4]
         date = date.replace('/', '-')
@@ -150,7 +158,9 @@ def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict):
             for word in users[userId]:
                 logger.warning(word)
                 logger.warning(key)
-                if word in key:
+
+
+                if wordInKey(word, key):
 
                     
 
