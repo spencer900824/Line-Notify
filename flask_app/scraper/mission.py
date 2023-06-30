@@ -113,10 +113,10 @@ def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict, 
     
     # 4. check target
     baseWindow = driver.window_handles[0]
-    logger.warning(len(newEvents.items()))
+    logger.warning(len(reversed(newEvents.items())))
     event_counter = 0
     for key, script in reversed(newEvents.items()):
-        event_cocunter += 1
+        event_counter += 1
         logger.warning(str(key))
         if event_counter > 5:
             break
