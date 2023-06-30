@@ -117,7 +117,7 @@ def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict, 
     event_counter = 0
     for key, script in reversed(newEvents.items()):
         event_cocunter += 1
-        logger.warning(key)
+        logger.warning(str(key))
         if event_counter > 5:
             break
         stock_id, cmpnyname, date, time_, = key.split(' ')[:4]
