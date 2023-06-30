@@ -39,6 +39,8 @@ def wordInKey(word, key):
     for word in allWords:
         if word not in key:
             return False
+    
+    return True
 
 
 logger = logging.getLogger()
