@@ -125,29 +125,38 @@ def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict, 
 
         if(f"{stock_id}-{date}-{time_}.png" not in image_table):
 
-            driver.execute_script(script)
-            driver.switch_to.window(driver.window_handles[-1])
-            delay = random.randint(1,3)
-            time.sleep(delay)
-            # set window to fit table
             try:
+                driver.execute_script(script)
+                driver.switch_to.window(driver.window_handles[-1])
+                delay = random.randint(4,5)
+                time.sleep(delay)
+            # set window to fit table
+            
                 bottom = driver.find_element(By.XPATH, '/html/body/table[3]/tbody/tr/td/b')
                 bottomLocation = bottom.location['y']
                 if bottomLocation < 800:
                     bottomLocation = 800
                 driver.set_window_size(driver.get_window_size()['width'], bottomLocation)
-            except:
-                pass
+            
             # save newData
-            png_file = f"{stock_id}-{date}-{time_}.png"
-            img = driver.get_screenshot_as_base64()
-            with open(png_file, 'wb') as f:
-                f.write(base64.b64decode(img))
-            # logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
-            image_table[png_file] = True
+                png_file = f"{stock_id}-{date}-{time_}.png"
+                img = driver.get_screenshot_as_base64()
+                with open(png_file, 'wb') as f:
+                    f.write(base64.b64decode(img))
+                # logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
+                
 
-            driver.close()
-            driver.switch_to.window(baseWindow)
+                
+                image_table[png_file] = True
+            except Exception as e:
+                logger.warning("warning to many request")
+                logger.warning(str(e))
+            finally:
+                driver.close()
+                driver.switch_to.window(baseWindow)
+
+        else:
+            logger.warning("skip image")
        
         #img_url = upload_image(png_file)
         ####判斷字詞發送notify
