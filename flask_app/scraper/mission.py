@@ -113,7 +113,8 @@ def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict, 
     
     # 4. check target
     baseWindow = driver.window_handles[0]
-    logger.warning(len(reversed(newEvents.items())))
+    logger.warning(str(newEvents.items()))
+    print(reversed(newEvents.items()))
     event_counter = 0
     for key, script in reversed(newEvents.items()):
         event_counter += 1
