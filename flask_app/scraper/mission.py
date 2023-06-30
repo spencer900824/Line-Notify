@@ -113,52 +113,84 @@ def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict, 
     
     # 4. check target
     baseWindow = driver.window_handles[0]
-    logger.warning(str(newEvents.items()))
+    
     print(reversed(newEvents.items()))
-    event_counter = 0
+    
     for key, script in reversed(newEvents.items()):
-        event_counter += 1
-        logger.warning(str(key))
-        if event_counter > 5:
-            break
+      
+       
         stock_id, cmpnyname, date, time_, = key.split(' ')[:4]
         date = date.replace('/', '-')
         announcement = ''.join(key.split(' ')[4:])
         
         script = script.replace('openWindow','openWindowAction').replace('this.form', 'document.fm_t05sr01_1') # magic method
         #logger.warning(script)
+        png_file = f"{stock_id}-{date}-{time_}.png"
+        if png_file not in image_table:
 
-        if(f"{stock_id}-{date}-{time_}.png" not in image_table):
+            fetchImage = True
 
             try:
                 driver.execute_script(script)
                 driver.switch_to.window(driver.window_handles[-1])
                 delay = random.randint(4,5)
                 time.sleep(delay)
-            # set window to fit table
+            except Exception as e:
+                logger.error(e)
+                fetchImage = False
+
             
+            # set window to fit table
+            try:
                 bottom = driver.find_element(By.XPATH, '/html/body/table[3]/tbody/tr/td/b')
                 bottomLocation = bottom.location['y']
                 if bottomLocation < 800:
                     bottomLocation = 800
                 driver.set_window_size(driver.get_window_size()['width'], bottomLocation)
-            
+            except:
+                fetchImage = False
+                
             # save newData
-                png_file = f"{stock_id}-{date}-{time_}.png"
-                img = driver.get_screenshot_as_base64()
-                with open(png_file, 'wb') as f:
-                    f.write(base64.b64decode(img))
-                # logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
-                
-
-                
+            
+            img = driver.get_screenshot_as_base64()
+            with open(png_file, 'wb') as f:
+                f.write(base64.b64decode(img))
+            # logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
+            
+            driver.close()
+            driver.switch_to.window(baseWindow)
+            if(fetchImage):
                 image_table[png_file] = True
-            except Exception as e:
-                logger.warning("warning to many request")
-                logger.warning(str(e))
-            finally:
-                driver.close()
-                driver.switch_to.window(baseWindow)
+
+            # try:
+            #     driver.execute_script(script)
+            #     driver.switch_to.window(driver.window_handles[-1])
+            #     delay = random.randint(4,5)
+            #     time.sleep(delay)
+            # # set window to fit table
+            
+            #     bottom = driver.find_element(By.XPATH, '/html/body/table[3]/tbody/tr/td/b')
+            #     bottomLocation = bottom.location['y']
+            #     if bottomLocation < 800:
+            #         bottomLocation = 800
+            #     driver.set_window_size(driver.get_window_size()['width'], bottomLocation)
+            
+            # # save newData
+            #     png_file = f"{stock_id}-{date}-{time_}.png"
+            #     img = driver.get_screenshot_as_base64()
+            #     with open(png_file, 'wb') as f:
+            #         f.write(base64.b64decode(img))
+            #     # logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
+                
+            #     driver.close()
+            #     driver.switch_to.window(baseWindow)
+                
+            #     image_table[png_file] = True
+            # except Exception as e:
+            #     logger.warning("warning to many request")
+            #     logger.warning(str(e))
+            
+               
 
         else:
             logger.warning("skip image")
