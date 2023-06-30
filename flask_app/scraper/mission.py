@@ -10,6 +10,8 @@ import logging
 import pyimgur
 import boto3
 
+import random
+
 from linebot.models import ImageSendMessage, TextSendMessage
 
 # def upload_image(imgpath, client_id = "42ec6a6d416cb1e"):
@@ -45,7 +47,7 @@ def wordInKey(word, key):
 
 logger = logging.getLogger()
 
-def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict):
+def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict, image_table):
     logger.warning("Starting")
     urlline = 'https://notify-api.line.me/api/notify'
     with open('config.json','r',encoding='utf-8') as f:
@@ -120,26 +122,32 @@ def crawl_mops(driver, line_bot_api, keywords_lock, message_lock, message_dict):
         
         script = script.replace('openWindow','openWindowAction').replace('this.form', 'document.fm_t05sr01_1') # magic method
         #logger.warning(script)
-        driver.execute_script(script)
-        driver.switch_to.window(driver.window_handles[-1])
-        time.sleep(1)
-        # set window to fit table
-        try:
-            bottom = driver.find_element(By.XPATH, '/html/body/table[3]/tbody/tr/td/b')
-            bottomLocation = bottom.location['y']
-            if bottomLocation < 800:
-                bottomLocation = 800
-            driver.set_window_size(driver.get_window_size()['width'], bottomLocation)
-        except:
-            pass
-        # save newData
-        png_file = f"{stock_id}-{date}-{time_}.png"
-        img = driver.get_screenshot_as_base64()
-        with open(png_file, 'wb') as f:
-            f.write(base64.b64decode(img))
-        # logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
-        driver.close()
-        driver.switch_to.window(baseWindow)
+
+        if(f"{stock_id}-{date}-{time_}.png" not in image_table):
+
+            driver.execute_script(script)
+            driver.switch_to.window(driver.window_handles[-1])
+            delay = random.randint(1,3)
+            time.sleep(delay)
+            # set window to fit table
+            try:
+                bottom = driver.find_element(By.XPATH, '/html/body/table[3]/tbody/tr/td/b')
+                bottomLocation = bottom.location['y']
+                if bottomLocation < 800:
+                    bottomLocation = 800
+                driver.set_window_size(driver.get_window_size()['width'], bottomLocation)
+            except:
+                pass
+            # save newData
+            png_file = f"{stock_id}-{date}-{time_}.png"
+            img = driver.get_screenshot_as_base64()
+            with open(png_file, 'wb') as f:
+                f.write(base64.b64decode(img))
+            # logger.error(f"Save {png_file}: {driver.save_screenshot(png_file)}")
+            image_table[png_file] = True
+
+            driver.close()
+            driver.switch_to.window(baseWindow)
        
         #img_url = upload_image(png_file)
         ####判斷字詞發送notify
